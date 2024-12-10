@@ -63,7 +63,6 @@ class SharedGroceriesCart(QMainWindow):
         pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
         pay_individual_btn.clicked.connect(self.pay_individual)
 
-    
 
 
         reset_cart_btn = QPushButton("Resert Cart 🔄")
@@ -96,6 +95,21 @@ class SharedGroceriesCart(QMainWindow):
         student_layout.addWidget(self.student_dropdown)
 
         main_layout.addLayout(student_layout)
+
+        # Product Grid
+        product_layout = QHBoxLayout()
+        product_label = QLabel("Pick a product:")
+        product_label.setStyleSheet("font-weight: bold; color: #34495E;")
+        product_layout.addWidget(product_label)
+        for product in self.products:
+            product_card = QPushButton(f"{product['name']}\n${product['price']:.2f}")
+            product_card.setStyleSheet(
+                "padding: 10px; background-color: #D6EAF8; border: 1px solid #5DADE2; border-radius: 5px;"
+            )
+            product_card.clicked.connect(lambda _, p=product: self.add_product(p))
+            product_layout.addWidget(product_card)
+        main_layout.addLayout(product_layout)
+
 
         # Cart Display Section
         self.cart_display = QScrollArea()
