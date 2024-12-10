@@ -85,6 +85,20 @@ class SharedGroceriesCart(QMainWindow):
 
         main_layout.addLayout(student_layout)
 
+        # Product Selection Section (new)
+        product_layout = QHBoxLayout()
+        product_label = QLabel("Available Products:", alignment=Qt.AlignLeft)
+        product_layout.addWidget(product_label)
+        
+        # Add product buttons
+        for product in self.products:
+            product_button = QPushButton(f"{product['name']} - ${product['price']:.2f}")
+            product_button.setStyleSheet("background-color: #D5E8FB; padding: 5px 10px; border-radius: 5px;")
+            product_button.clicked.connect(lambda _, p=product: self.add_product(p))
+            product_layout.addWidget(product_button)
+        
+        main_layout.addLayout(product_layout)
+
         # Cart Display Section
         self.cart_display = QScrollArea()
         self.cart_widget = QWidget()
@@ -166,16 +180,16 @@ class SharedGroceriesCart(QMainWindow):
         if not self.selected_student:
             QMessageBox.warning(self, "Hold on!", "Select a student before adding items!")
             return
-        if product["name"] in self.cart:
-            self.cart[product["name"]]["quantity"] += 1
-            self.cart[product["name"]]["added_by"].append(self.selected_student)
+        if product["name"] in self.cart[self.selected_student]:
+            self.cart[self.selected_student][product["name"]]["quantity"] += 1
         else:
-            self.cart[product["name"]] = {
+            # If the product doesn't exist in the student's cart, add it
+            self.cart[self.selected_student][product["name"]] = {
                 "price": product["price"],
-                "quantity": 1,
-                "added_by": [self.selected_student],
+                "quantity": 1
             }
-            self.update_cart_display()
+
+        self.update_cart_display()
 
     def remove_product(self, product_name):
         """Remove a product from the cart for the selected student."""
