@@ -12,8 +12,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v3
@@ -31,25 +35,20 @@ jobs:
         flake8 . --count --max-line-length=127 --statistics
 
     - name: Test with pytest and coverage
-      run: pytest --cov=.
+      run: |
+        pytest tests/ --cov=.
 
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:latest
+      run: |
+        docker build . --file Dockerfile --tag my-image-name:latest
 
     - name: Run Docker container
-      run: docker run my-image-name:latest
+      run: |
+        docker run my-image-name:latest
 
-       steps:
-  - name: Checkout Code
-    uses: actions/checkout@v3
-    run: echo "Code has been checked out successfully"
-
-  - name: Run Tests
-    run: |
-      echo "::group::Starting Tests"
-      pytest tests/
-      echo "::endgroup::"
-      echo "::notice::All tests passed successfully"
-
-  - name: Deploy Application
-    run: echo "::error::Deployment failed. Please check configurations."
+    - name: Deploy Application
+      if: always()
+      run: |
+        echo "::group::Starting Deployment"
+        echo "::notice::Deployment skipped in this workflow example"
+        echo "::endgroup::"
