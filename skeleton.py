@@ -158,8 +158,12 @@ class SharedGroceriesCart(QMainWindow):
 
     def pay_whole_cart(self):
         """Calculate and display the total cost for everyone."""
-        # This function should calculate the grand total for all students' products
-        # and include the delivery fee. Display the total using QMessageBox.
+        if not selfcart:
+            QMessageBox.warning(self, "Please add items to your cart!")
+            return
+        
+        total_ammount = sum(item["price"] * item["quantity"] for tiem in self.cart.values()) + self.delivery_fee
+        QMessageBox.information(self, "Ready to Pay!", f"The total amount in  this cart is $(grand_total.2f).")
 
     def pay_individual(self):
         """Calculate and display the total cost per student."""
