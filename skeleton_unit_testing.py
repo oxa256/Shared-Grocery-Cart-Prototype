@@ -103,8 +103,36 @@ class skeleton_unit_testing(unittest.TestCase):
         self.assertEqual(self.cart.cart_layout.count(), 1, "cart should display a message when no student is selected")
 
     def test_add_product(self):
+
+        def test_add_product(self):
+    # Add a student and select them
+    self.cart.student_input.setText("emma")
+    self.cart.add_student()
+    self.cart.student_dropdown.setCurrentIndex(1)  
+    self.cart.select_student(1)
+
+    # Add a product to the cart
+    product = {"name": "🥛 Milk", "price": 3.5}
+    self.cart.add_product(product)
+
+    # Verify that the product is in the cart
+    self.assertIn("🥛 Milk", self.cart.cart, "Milk should be added to the cart")
+    self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 1, "Milk quantity should be 1")
+    self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], ["emma"], "Milk should be added by emma")
+
+    # Add the same product again
+    self.cart.add_product(product)
+    self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 2, "Milk quantity should now be 2")
+    self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], ["emma", "emma"], "Both entries should be added by emma")
+
+    # Add a different product
+    product2 = {"name": "🍞 Bread", "price": 2.0}
+    self.cart.add_product(product2)
+    self.assertIn("🍞 Bread", self.cart.cart, "Bread should be added to the cart")
+    self.assertEqual(self.cart.cart["🍞 Bread"]["quantity"], 1, "Bread quantity should be 1")
+
         # test adding items to a student's cart
-        pass
+    pass
 
     def test_remove_product(self):
         # check if removing items from the cart works
