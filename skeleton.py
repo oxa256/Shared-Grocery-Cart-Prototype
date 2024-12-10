@@ -128,7 +128,7 @@ class SharedGroceriesCart(QMainWindow):
         if not student_name:
             QMessageBox.warning(self, "Error", "Student name cannot be empty!")
             return
-
+        
         if student_name in self.students:
             QMessageBox.warning(self, "Error", f"Student '{student_name}' already exists!")
             return
