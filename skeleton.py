@@ -73,11 +73,11 @@ class SharedGroceriesCart(QMainWindow):
         for product in self.products:
             product_button = QPushButton(f"{product['name']} - ${product['price']:.2f}")
             product_button.setStyleSheet("background-color: #D5E8FB; padding: 5px 10px; border-radius: 5px;")
-
             product_button.clicked.connect(lambda _, p=product: self.add_product(p))
             product_layout.addWidget(product_button)
         
         main_layout.addLayout(product_layout)
+
 
         # Cart Display Section
         self.cart_display = QScrollArea()
@@ -99,7 +99,7 @@ class SharedGroceriesCart(QMainWindow):
         pay_whole_btn.setFixedHeight(40)
 
         pay_individual_btn = QPushButton("Pay Individually 🧾")
-        pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
+        pay_individual_btn.setStyleSheet("background-color: #5DADE2; color: white; padding: 10px; border-radius: 5px;")
         pay_individual_btn.clicked.connect(self.pay_individual)
         pay_individual_btn.setFixedHeight(40)
 
