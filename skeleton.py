@@ -187,8 +187,21 @@ class SharedGroceriesCart(QMainWindow):
 
     def pay_individual(self):
         """Calculate and display the total cost per student."""
-        # This function should calculate the total amount each student owes based on their contributions.
-        # Display the breakdown of payments using QMessageBox.
+        if not self.cart:
+            QMessageBox.warning(self, "Please add items to your cart!")
+            return
+        payments = {student: 0 for student in self.students}
+        for product_name, product_data in self.cart.items():
+            product_total = product_data["price"] * product_data["quantity"]
+            for student in product_data["added_by"]:
+                payments[student] += product_total / len(product_data["added_by"])
+
+        for student in payments:
+            payments[student] += self.delivery_fee / len(self.students)
+
+        payment_info = "\n".join([f"{student}: ${amount:.2f}" for student, amount in payments.items()])
+        QMessageBox.information(self, "Payment Breakdown", f"Each student's share:\n{payment_info}")
+
 
     def reset_cart(self):
         """Reset the cart to its initial state."""
