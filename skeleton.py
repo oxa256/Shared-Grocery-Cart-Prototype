@@ -147,16 +147,35 @@ class SharedGroceriesCart(QMainWindow):
 
     def add_product(self, product):
         """Add a selected product to the current student's cart."""
-        # This function should add the product to the selected student's cart.
-        # If the product already exists in the cart, increase the quantity.
-        # Otherwise, add it as a new item. omar made a change eher 
-        
+
+        if not self.selected_student:
+            QMessageBox.warning(self, "Hold on!", "Select a student before adding items!")
+            return
+        if product["name"] in self.cart:
+            self.cart[product["name"]]["quantity"] += 1
+            self.cart[product["name"]]["added_by"].append(self.selected_student)
+        else:
+            self.cart[product["name"]] = {
+                "price": product["price"],
+                "quantity": 1,
+                "added_by": [self.selected_student],
+            }
+            self.update_cart_display()
 
     def remove_product(self, product_name):
         """Remove a product from the cart for the selected student."""
-        # This function should handle removing a product from the cart.
-        # Check if the selected student has added that product before removing it.
-
+         
+        if not self.selected_student or product_name not in self.cart:
+            return
+        product_data = self.cart[product_name]
+        if self.selected_student in product_data["added_by"]:
+            product_data["added_by"].remove(self.selected_student)
+            product_data["quantity"] -= 1
+            if product_data["quantity"] == 0:
+                del self.cart[product_name]
+        
+        self.update_cart_display()
+        
     def pay_whole_cart(self):
         """Calculate and display the total cost for everyone."""
         # This function should calculate the grand total for all students' products
