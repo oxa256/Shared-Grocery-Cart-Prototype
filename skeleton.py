@@ -78,20 +78,6 @@ class SharedGroceriesCart(QMainWindow):
         
         main_layout.addLayout(product_layout)
 
-        # Product Selection Section (new)
-        product_layout = QHBoxLayout()
-        product_label = QLabel("Available Products:", alignment=Qt.AlignLeft)
-        product_layout.addWidget(product_label)
-        
-        # Add product buttons
-        for product in self.products:
-            product_button = QPushButton(f"{product['name']} - ${product['price']:.2f}")
-            product_button.setStyleSheet("background-color: #D5E8FB; padding: 5px 10px; border-radius: 5px;")
-
-            product_button.clicked.connect(lambda _, p=product: self.add_product(p))
-            product_layout.addWidget(product_button)
-        
-        main_layout.addLayout(product_layout)
 
         # Cart Display Section
         self.cart_display = QScrollArea()
