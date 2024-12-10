@@ -120,6 +120,11 @@ class SharedGroceriesCart(QMainWindow):
     def add_student(self):
         """Add a new student to the cart."""
         student_name = self.student_input.text().strip()
+
+        if not student_name.isalpha() and not all(c.isalpha() or c.isspace() for c in student_name):
+            QMessageBox.warning(self, "Invalid Input", "Student name must contain only letters and spaces!")
+            return
+
         if not student_name:
             QMessageBox.warning(self, "Error", "Student name cannot be empty!")
             return
