@@ -149,7 +149,8 @@ class SharedGroceriesCart(QMainWindow):
         """Add a selected product to the current student's cart."""
         # This function should add the product to the selected student's cart.
         # If the product already exists in the cart, increase the quantity.
-        # Otherwise, add it as a new item.
+        # Otherwise, add it as a new item. omar made a change eher 
+        
 
     def remove_product(self, product_name):
         """Remove a product from the cart for the selected student."""
