@@ -120,13 +120,18 @@ class skeleton_unit_testing(unittest.TestCase):
 
     def tearDown(self):
         # close the cart after each test
-        self.cart.close()
+        if self.cart:
+            self.cart.close()
+        self.cart = None
+
 
     @classmethod
     def tearDownClass(cls):
         # clean up the app after all tests are done
-        cls.app.quit()
+        if cls.app:
 
+            cls.app.quit()
+        cls.app = None
 
 if __name__ == "__main__":
     unittest.main()
