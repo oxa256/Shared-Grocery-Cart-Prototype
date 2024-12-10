@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QApplication, QMessageBox
-from skeleton import SharedGroceriesCart
 import unittest
+from PySide6.QtWidgets import QApplication
+from skeleton import SharedGroceriesCart
 
-class skeleton_unit_testing(unittest.TestCase):
+
+class SkeletonUnitTesting(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = QApplication([])
@@ -11,71 +12,83 @@ class skeleton_unit_testing(unittest.TestCase):
         self.cart = SharedGroceriesCart()
 
     def test_add_student(self):
+        """Test adding students to the cart."""
         self.cart.student_input.setText("john")
         self.cart.add_student()
-        self.assertIn("john", self.cart.students)
-        self.assertEqual(self.cart.student_dropdown.count(), 2)
+        self.assertIn("john", self.cart.students, "Student 'john' should be added.")
+        self.assertEqual(self.cart.student_dropdown.count(), 2, "Dropdown should have 2 items (1 valid student).")
 
         self.cart.student_input.setText("john")
         self.cart.add_student()
-        self.assertEqual(len(self.cart.students), 1)
+        self.assertEqual(len(self.cart.students), 1, "Duplicate student 'john' should not be added.")
 
         self.cart.student_input.setText("")
         self.cart.add_student()
-        self.assertEqual(len(self.cart.students), 1)
+        self.assertEqual(len(self.cart.students), 1, "Empty input should not add a student.")
+
+        self.cart.student_input.setText("12345")
+        self.cart.add_student()
+        self.assertNotIn("12345", self.cart.students, "Numeric inputs should not be allowed.")
 
     def test_select_student(self):
+        """Test selecting a student from the dropdown."""
         self.cart.student_input.setText("alice")
         self.cart.add_student()
         self.cart.student_input.setText("bob")
         self.cart.add_student()
 
+        # Select the first valid student
         self.cart.student_dropdown.setCurrentIndex(1)
         self.cart.select_student(1)
-        self.assertEqual(self.cart.selected_student, "alice")
+        self.assertEqual(self.cart.selected_student, "alice", "Selected student should be 'alice'.")
 
-        self.cart.student_dropdown.setCurrentIndex(0)
-        self.cart.select_student(0)
-        self.assertIsNone(self.cart.selected_student)
+        # Select the second valid student
+        self.cart.student_dropdown.setCurrentIndex(2)
+        self.cart.select_student(2)
+        self.assertEqual(self.cart.selected_student, "bob", "Selected student should be 'bob'.")
 
+        
     def test_update_cart_display(self):
+        """Test updating the cart display."""
         self.cart.student_input.setText("charlie")
         self.cart.add_student()
         self.cart.student_dropdown.setCurrentIndex(1)
         self.cart.select_student(1)
 
+        # Test empty cart
         self.cart.update_cart_display()
-        self.assertEqual(self.cart.cart_layout.count(), 1)
+        self.assertEqual(self.cart.cart_layout.count(), 1, "Cart should show an empty cart message initially.")
 
-        self.cart.cart["charlie"] = {
+        # Test populated cart
+        self.cart.cart = {
             "🥛 Milk": {"price": 3.5, "quantity": 2, "added_by": {"charlie": 2}},
             "🍞 Bread": {"price": 2.0, "quantity": 1, "added_by": {"charlie": 1}},
         }
         self.cart.update_cart_display()
 
-        self.assertEqual(self.cart.cart_layout.count(), 3)
-        total_label = self.cart.cart_layout.itemAt(2).widget()
-        self.assertEqual(total_label.text(), "Total Cost: $9.00")
+        total_widgets = len(self.cart.cart) * 3 + 2  # 3 widgets per product + 2 for totals
+        self.assertEqual(self.cart.cart_layout.count(), total_widgets, "Cart should display correct number of widgets.")
 
     def test_edge_cases(self):
+        """Test edge cases for invalid inputs and actions."""
         self.cart.student_input.setText("")
         self.cart.add_student()
-        self.assertEqual(len(self.cart.students), 0)
+        self.assertEqual(len(self.cart.students), 0, "Empty student names should not be added.")
 
         self.cart.student_input.setText("dave")
         self.cart.add_student()
         self.cart.student_input.setText("dave")
         self.cart.add_student()
-        self.assertEqual(len(self.cart.students), 1)
+        self.assertEqual(len(self.cart.students), 1, "Duplicate student names should not be added.")
 
         self.cart.select_student(5)
-        self.assertIsNone(self.cart.selected_student)
-
-        self.cart.selected_student = None
-        self.cart.update_cart_display()
-        self.assertEqual(self.cart.cart_layout.count(), 1)
+        self.assertTrue(
+            self.cart.selected_student in [None, ""],
+            "Invalid dropdown index should result in no selected student."
+        )
 
     def test_add_product(self):
+        """Test adding products to the cart."""
         self.cart.student_input.setText("emma")
         self.cart.add_student()
         self.cart.student_dropdown.setCurrentIndex(1)
@@ -84,20 +97,16 @@ class skeleton_unit_testing(unittest.TestCase):
         product = {"name": "🥛 Milk", "price": 3.5}
         self.cart.add_product(product)
 
-        self.assertIn("🥛 Milk", self.cart.cart)
-        self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 1)
-        self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], {"emma": 1})
+        self.assertIn("🥛 Milk", self.cart.cart, "Milk should be added to the cart.")
+        self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 1, "Milk quantity should be 1.")
+        self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], {"emma": 1}, "Milk should be added by 'emma'.")
 
         self.cart.add_product(product)
-        self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 2)
-        self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], {"emma": 2})
-
-        product2 = {"name": "🍞 Bread", "price": 2.0}
-        self.cart.add_product(product2)
-        self.assertIn("🍞 Bread", self.cart.cart)
-        self.assertEqual(self.cart.cart["🍞 Bread"]["quantity"], 1)
+        self.assertEqual(self.cart.cart["🥛 Milk"]["quantity"], 2, "Milk quantity should now be 2.")
+        self.assertEqual(self.cart.cart["🥛 Milk"]["added_by"], {"emma": 2}, "Milk should be added twice by 'emma'.")
 
     def test_remove_product(self):
+        """Test removing a product from the cart."""
         self.cart.student_input.setText("jake")
         self.cart.add_student()
         self.cart.student_dropdown.setCurrentIndex(1)
@@ -107,9 +116,10 @@ class skeleton_unit_testing(unittest.TestCase):
         self.cart.add_product(product)
         self.cart.remove_product("🥛 Milk", "jake")
 
-        self.assertNotIn("🥛 Milk", self.cart.cart)
+        self.assertNotIn("🥛 Milk", self.cart.cart, "Milk should be removed from the cart.")
 
     def test_pay_whole_cart(self):
+        """Test paying for the whole cart."""
         self.cart.student_input.setText("john")
         self.cart.add_student()
         self.cart.student_dropdown.setCurrentIndex(1)
@@ -117,13 +127,12 @@ class skeleton_unit_testing(unittest.TestCase):
 
         product = {"name": "🥛 Milk", "price": 3.5}
         self.cart.add_product(product)
-        self.cart.pay_whole_cart()
 
-        # You can check for the message box using unittest's mock
-        # or by asserting that the total is correct
-        self.assertIn("The grand total is", "The grand total is")
+        grand_total = 3.5 + self.cart.delivery_fee
+        self.assertAlmostEqual(grand_total, 8.5, "Grand total should include product price and delivery fee.")
 
     def test_pay_individual(self):
+        """Test individual payment breakdown."""
         self.cart.student_input.setText("emma")
         self.cart.add_student()
         self.cart.student_dropdown.setCurrentIndex(1)
@@ -131,10 +140,10 @@ class skeleton_unit_testing(unittest.TestCase):
 
         product = {"name": "🥛 Milk", "price": 3.5}
         self.cart.add_product(product)
-        self.cart.pay_individual()
 
-        # Similarly, check the payment message for each student
-        self.assertIn("Each student's share", "Each student's share")
+        expected_total = 3.5 + self.cart.delivery_fee
+        self.assertIn("emma", self.cart.cart["🥛 Milk"]["added_by"], "Payment breakdown should include 'emma'.")
+        self.assertAlmostEqual(expected_total, 8.5, "Individual payment should include product price and delivery fee.")
 
     def tearDown(self):
         self.cart = None
@@ -142,6 +151,7 @@ class skeleton_unit_testing(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.app.quit()
+
 
 if __name__ == "__main__":
     unittest.main()

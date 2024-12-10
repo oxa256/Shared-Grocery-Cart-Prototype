@@ -1,7 +1,4 @@
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea, QMessageBox
-)
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea, QMessageBox
 from PySide6.QtCore import Qt
 import sys
 
@@ -77,7 +74,6 @@ class SharedGroceriesCart(QMainWindow):
             product_layout.addWidget(product_button)
         
         main_layout.addLayout(product_layout)
-
 
         # Cart Display Section
         self.cart_display = QScrollArea()
@@ -214,8 +210,10 @@ class SharedGroceriesCart(QMainWindow):
             return
 
         if product["name"] not in self.cart:
+            # Initialize the cart entry with quantity and added_by
             self.cart[product["name"]] = {
                 "price": product["price"],
+                "quantity": 1,  # Initialize quantity here
                 "added_by": {self.selected_student: 1}
             }
         else:
@@ -223,6 +221,9 @@ class SharedGroceriesCart(QMainWindow):
                 self.cart[product["name"]]["added_by"][self.selected_student] = 1
             else:
                 self.cart[product["name"]]["added_by"][self.selected_student] += 1
+
+            # Update the quantity
+            self.cart[product["name"]]["quantity"] += 1
 
         self.update_cart_display()
 
@@ -287,8 +288,6 @@ class SharedGroceriesCart(QMainWindow):
     # Clear cart display
         self.update_cart_display()
         QMessageBox.information(self, "Reset", "The cart has been reset. You may enter a new order")
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
