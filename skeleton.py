@@ -113,7 +113,7 @@ class SharedGroceriesCart(QMainWindow):
         pay_whole_btn.setFixedHeight(40)
 
         pay_individual_btn = QPushButton("Pay Individually 🧾")
-        pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
+        pay_individual_btn.setStyleSheet("background-color: #5DADE2; color: white; padding: 10px; border-radius: 5px;")
         pay_individual_btn.clicked.connect(self.pay_individual)
         pay_individual_btn.setFixedHeight(40)
 
