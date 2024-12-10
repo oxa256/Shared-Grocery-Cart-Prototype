@@ -270,16 +270,18 @@ class SharedGroceriesCart(QMainWindow):
         self.cart.clear()
 
          # Clear students list and reset dropdown
+        self.student_dropdown.blockSignals(True)
         self.students.clear()
         self.student_dropdown.clear()
         self.student_dropdown.addItem("-- Select Student --")
+        self.student_dropdown.blockSignals(False)
 
     # Reset selected student
         self.selected_student = None
 
     # Clear cart display
         self.update_cart_display()
-        QMessageBox.information(self, "Reset", "The cart has been reset. You can start fresh!")
+        QMessageBox.information(self, "Reset", "The cart has been reset. You may enter a new order")
 
 
 
