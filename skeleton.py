@@ -45,27 +45,6 @@ class SharedGroceriesCart(QMainWindow):
         title.setStyleSheet("font-size: 26px; font-weight: bold; color: #5DADE2; margin-bottom: 20px;")
         main_layout.addWidget(title)
 
-        # Payment and Reset Buttons
-        payment_layout = QHBoxLayout()
-
-        pay_whole_btn = QPushButton("Pay for Everyone 💳")
-        pay_whole_btn.setStyleSheet("background-color: #5DADE2; color: white; padding: 10px; border-radius: 5px;")
-        pay_whole_btn.clicked.connect(self.pay_whole_cart)
-
-        pay_individual_btn = QPushButton("Pay Individually 🧾")
-        pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
-        pay_individual_btn.clicked.connect(self.pay_individual)
-
-        reset_cart_btn = QPushButton("Reset Cart 🔄")
-        reset_cart_btn.setStyleSheet("background-color: #E74C3C; color: white; padding: 10px; border-radius: 5px;")
-        reset_cart_btn.clicked.connect(self.reset_cart)
-
-        payment_layout.addWidget(pay_whole_btn)
-        payment_layout.addWidget(pay_individual_btn)
-        payment_layout.addWidget(reset_cart_btn)
-
-        main_layout.addLayout(payment_layout)
-
         # Add Student Section
         student_layout = QVBoxLayout()
         student_layout.addWidget(QLabel("Add a student:", alignment=Qt.AlignLeft))
@@ -93,6 +72,27 @@ class SharedGroceriesCart(QMainWindow):
         self.cart_display.setWidgetResizable(True)
         self.cart_display.setStyleSheet("background-color: #ECF0F1; border: 1px solid #D5D8DC;")
         main_layout.addWidget(self.cart_display)
+
+        # Payment and Reset Buttons
+        payment_layout = QHBoxLayout()
+
+        pay_whole_btn = QPushButton("Pay for Everyone 💳")
+        pay_whole_btn.setStyleSheet("background-color: #5DADE2; color: white; padding: 10px; border-radius: 5px;")
+        pay_whole_btn.clicked.connect(self.pay_whole_cart)
+
+        pay_individual_btn = QPushButton("Pay Individually 🧾")
+        pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
+        pay_individual_btn.clicked.connect(self.pay_individual)
+
+        reset_cart_btn = QPushButton("Reset Cart 🔄")
+        reset_cart_btn.setStyleSheet("background-color: #E74C3C; color: white; padding: 10px; border-radius: 5px;")
+        reset_cart_btn.clicked.connect(self.reset_cart)
+
+        payment_layout.addWidget(pay_whole_btn)
+        payment_layout.addWidget(pay_individual_btn)
+        payment_layout.addWidget(reset_cart_btn)
+
+        main_layout.addLayout(payment_layout)
 
     def add_student(self):
         """Add a new student to the cart."""
