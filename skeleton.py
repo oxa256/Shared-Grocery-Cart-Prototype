@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import sys
 
-
 class SharedGroceriesCart(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -32,6 +31,7 @@ class SharedGroceriesCart(QMainWindow):
 
     def initUI(self):
         """Set up the user interface components."""
+        # Central widget
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
@@ -45,9 +45,7 @@ class SharedGroceriesCart(QMainWindow):
         title.setStyleSheet("font-size: 26px; font-weight: bold; color: #5DADE2; margin-bottom: 20px;")
         main_layout.addWidget(title)
 
-
-
-         # Payment and Reset Buttons
+        # Payment and Reset Buttons
         payment_layout = QHBoxLayout()
 
         pay_whole_btn = QPushButton("Pay for Everyone 💳")
@@ -58,18 +56,13 @@ class SharedGroceriesCart(QMainWindow):
         pay_individual_btn.setStyleSheet("background-color: #85C1E9; color: white; padding: 10px; border-radius: 5px;")
         pay_individual_btn.clicked.connect(self.pay_individual)
 
-    
-
-
-        reset_cart_btn = QPushButton("Resert Cart 🔄")
+        reset_cart_btn = QPushButton("Reset Cart 🔄")
         reset_cart_btn.setStyleSheet("background-color: #E74C3C; color: white; padding: 10px; border-radius: 5px;")
         reset_cart_btn.clicked.connect(self.reset_cart)
-
 
         payment_layout.addWidget(pay_whole_btn)
         payment_layout.addWidget(pay_individual_btn)
         payment_layout.addWidget(reset_cart_btn)
-
 
         main_layout.addLayout(payment_layout)
 
@@ -92,21 +85,6 @@ class SharedGroceriesCart(QMainWindow):
 
         main_layout.addLayout(student_layout)
 
-        # Product Grid
-        product_layout = QHBoxLayout()
-        product_label = QLabel("Pick a product:")
-        product_label.setStyleSheet("font-weight: bold; color: #34495E;")
-        product_layout.addWidget(product_label)
-        for product in self.products:
-            product_card = QPushButton(f"{product['name']}\n${product['price']:.2f}")
-            product_card.setStyleSheet(
-                "padding: 10px; background-color: #D6EAF8; border: 1px solid #5DADE2; border-radius: 5px;"
-            )
-            product_card.clicked.connect(lambda _, p=product: self.add_product(p))
-            product_layout.addWidget(product_card)
-        main_layout.addLayout(product_layout)
-
-
         # Cart Display Section
         self.cart_display = QScrollArea()
         self.cart_widget = QWidget()
@@ -115,22 +93,6 @@ class SharedGroceriesCart(QMainWindow):
         self.cart_display.setWidgetResizable(True)
         self.cart_display.setStyleSheet("background-color: #ECF0F1; border: 1px solid #D5D8DC;")
         main_layout.addWidget(self.cart_display)
-
-        # Payment and Reset Buttons
-        payment_layout = QHBoxLayout()
-        pay_whole_btn = QPushButton("Pay for Everyone 💳")
-        pay_whole_btn.clicked.connect(self.pay_whole_cart)
-        payment_layout.addWidget(pay_whole_btn)
-
-        pay_individual_btn = QPushButton("Pay Individually 🧾")
-        pay_individual_btn.clicked.connect(self.pay_individual)
-        payment_layout.addWidget(pay_individual_btn)
-
-        reset_cart_btn = QPushButton("Reset Cart 🔄")
-        reset_cart_btn.clicked.connect(self.reset_cart)
-        payment_layout.addWidget(reset_cart_btn)
-
-        main_layout.addLayout(payment_layout)
 
     def add_student(self):
         """Add a new student to the cart."""
@@ -143,6 +105,7 @@ class SharedGroceriesCart(QMainWindow):
             QMessageBox.warning(self, "Error", f"Student '{student_name}' already exists!")
             return
 
+        # Add student and clear input
         self.students.append(student_name)
         self.cart[student_name] = {}  # Initialize their cart
         self.student_dropdown.addItem(student_name)
@@ -156,12 +119,13 @@ class SharedGroceriesCart(QMainWindow):
             QMessageBox.warning(self, "Error", "Please select a valid student!")
             return
 
+        # Update the selected student
         self.selected_student = self.student_dropdown.itemText(index)
         QMessageBox.information(self, "Selection Updated", f"'{self.selected_student}' is now selected.")
-        self.update_cart_display()
 
     def update_cart_display(self):
         """Update the cart display with the current state of the cart."""
+        # Clear existing cart items
         while self.cart_layout.count():
             child = self.cart_layout.takeAt(0)
             if child.widget():
@@ -173,6 +137,7 @@ class SharedGroceriesCart(QMainWindow):
             self.cart_layout.addWidget(empty_label)
             return
 
+        # Display the selected student's cart
         student_cart = self.cart.get(self.selected_student, {})
         if not student_cart:
             empty_label = QLabel(f"{self.selected_student} has no items in their cart.")
@@ -186,22 +151,71 @@ class SharedGroceriesCart(QMainWindow):
             price = details["price"]
             total_cost += quantity * price
 
+            # Product display
             product_label = QLabel(f"{product_name} x{quantity} - ${quantity * price:.2f}")
             product_label.setStyleSheet("margin-bottom: 10px; padding: 5px; background-color: #ECF0F1; border-radius: 4px;")
             self.cart_layout.addWidget(product_label)
 
+        # Display the total cost
         total_label = QLabel(f"Total Cost: ${total_cost:.2f}")
         total_label.setStyleSheet("font-weight: bold; color: #2ECC71; margin-top: 15px;")
         self.cart_layout.addWidget(total_label)
 
+    def add_product(self, product):
+        """Add a selected product to the current student's cart."""
+        if not self.selected_student:
+            QMessageBox.warning(self, "Hold on!", "Select a student before adding items!")
+            return
+        if product["name"] in self.cart:
+            self.cart[product["name"]]["quantity"] += 1
+            self.cart[product["name"]]["added_by"].append(self.selected_student)
+        else:
+            self.cart[product["name"]] = {
+                "price": product["price"],
+                "quantity": 1,
+                "added_by": [self.selected_student],
+            }
+            self.update_cart_display()
+
+    def remove_product(self, product_name):
+        """Remove a product from the cart for the selected student."""
+        if not self.selected_student or product_name not in self.cart:
+            return
+        product_data = self.cart[product_name]
+        if self.selected_student in product_data["added_by"]:
+            product_data["added_by"].remove(self.selected_student)
+            product_data["quantity"] -= 1
+            if product_data["quantity"] == 0:
+                del self.cart[product_name]
+        
+        self.update_cart_display()
+
     def pay_whole_cart(self):
         """Calculate and display the total cost for everyone."""
         if not self.cart:
-            QMessageBox.warning(self, "Error", "The cart is empty!")
+            QMessageBox.warning(self, "Please add items to your cart!")
+            return
+        
+        total_amount = sum(product["price"] * product["quantity"] for product in self.cart.values()) + self.delivery_fee
+        QMessageBox.information(self, "Ready to Pay!", f"The total amount in this cart is ${total_amount:.2f}.")
+
+    def pay_individual(self):
+        """Calculate and display the total cost per student."""
+        if not self.cart:
+            QMessageBox.warning(self, "Please add items to your cart!")
             return
 
-        total_amount = sum(item["price"] * item["quantity"] for item in self.cart.values()) + self.delivery_fee
-        QMessageBox.information(self, "Ready to Pay!", f"The total amount is ${total_amount:.2f}.")
+        payments = {student: 0 for student in self.students}
+        for product_name, product_data in self.cart.items():
+            product_total = product_data["price"] * product_data["quantity"]
+            for student in product_data["added_by"]:
+                payments[student] += product_total / len(product_data["added_by"])
+
+        for student in payments:
+            payments[student] += self.delivery_fee / len(self.students)
+
+        payment_info = "\n".join([f"{student}: ${amount:.2f}" for student, amount in payments.items()])
+        QMessageBox.information(self, "Payment Breakdown", f"Each student's share:\n{payment_info}")
 
     def reset_cart(self):
         """Reset the cart to its initial state."""
@@ -209,7 +223,9 @@ class SharedGroceriesCart(QMainWindow):
         self.selected_student = None
         self.student_dropdown.setCurrentIndex(0)
         self.update_cart_display()
-        QMessageBox.information(self, "Cart Reset", "The cart has been reset.")
+
+        QMessageBox.information(self, "Cart reset")
+
 
 # Main execution
 def main():
