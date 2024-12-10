@@ -279,10 +279,22 @@ class SharedGroceriesCart(QMainWindow):
         QMessageBox.information(self, "Payment Breakdown", f"Each student's share:\n{payment_info}")
 
     def reset_cart(self):
-        """Reset the cart and all selections."""
+        """Reset the cart, student dropdown, and all selections."""
+        # Clear the cart
         self.cart.clear()
+
+         # Clear students list and reset dropdown
+        self.students.clear()
+        self.student_dropdown.clear()
+        self.student_dropdown.addItem("-- Select Student --")
+
+    # Reset selected student
         self.selected_student = None
+
+    # Clear cart display
         self.update_cart_display()
+        QMessageBox.information(self, "Reset", "The cart has been reset. You can start fresh!")
+
 
 
 if __name__ == "__main__":
