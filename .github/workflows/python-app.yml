@@ -1,4 +1,4 @@
-name: Python application
+name: Shared Groceries App CI/CD Workflow
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,27 +24,24 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Install dependencies
+    - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-
-    - name: Test with pytest and coverage
+    - name: Run Unit Tests Locally
       run: |
-        pytest tests/ --cov=.
+        python -m unittest discover -s tests -p "*.py"
 
-    - name: Build Docker image
+    - name: Build Docker Image
       run: |
-        docker build . --file Dockerfile --tag my-image-name:latest
+        docker build . --file Dockerfile --tag shared-groceries-app:latest
 
-    - name: Run Docker container
+    - name: Run Application in Docker Locally
       run: |
-        docker run my-image-name:latest
+        docker run -d --name shared-groceries-app-container -p 8080:8080 shared-groceries-app:latest
 
-    - name: Deploy Application
-      if: always()
+    - name: Verify Application Logs and Status
       run: |
-        echo "::group::Starting Deployment"
-        echo "::notice::Deployment skipped in this workflow example"
-        echo "::endgroup::"
+        docker logs shared-groceries-app-container
+        docker inspect -f '{{.State.Running}}' shared-groceries-app-container
