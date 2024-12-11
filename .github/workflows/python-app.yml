@@ -2,16 +2,23 @@ name: Python application
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 permissions:
   contents: read
+=======
+    branches: [development]
+  pull_request:
+    branches: [development]
+>>>>>>> development
 
 jobs:
   build:
     runs-on: ubuntu-latest
+<<<<<<< HEAD
     steps:
     - uses: actions/checkout@v4
 
@@ -54,3 +61,26 @@ jobs:
   - name: Deploy Application
     run: echo "::error::Deployment failed. Please check configurations."
 
+=======
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.13.1
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Run tests explicitly (instead of unittest discover)
+    - name: Run unit tests
+      run: |
+        python -m unittest skeleton_unit_testing.py
+>>>>>>> development
