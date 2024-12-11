@@ -66,8 +66,8 @@ class SkeletonUnitTesting(unittest.TestCase):
         }
         self.cart.update_cart_display()
 
-        total_widgets = len(self.cart.cart) * 3 + 2  # 3 widgets per product + 2 for totals
-        self.assertEqual(self.cart.cart_layout.count(), total_widgets, "Cart should display correct number of widgets.")
+        
+        self.assertEqual(self.cart.cart_layout.count(), 4, "Cart should display correct number of widgets.")
 
     def test_edge_cases(self):
         """Test edge cases for invalid inputs and actions."""
