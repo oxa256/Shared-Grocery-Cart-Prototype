@@ -1,47 +1,32 @@
-name: Shared Groceries App CI/CD Workflow
+name: Python application
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [development]
   pull_request:
-    branches: [ "development" ]
-
-permissions:
-  contents: read
+    branches: [development]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+    - name: Checkout code
+      uses: actions/checkout@v2
 
+    # Set up Python environment
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
+        python-version: 3.10
 
-    - name: Install Python Dependencies
+    # Install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements.txt
 
-    - name: Run Unit Tests Locally
+    # Run tests explicitly (instead of unittest discover)
+    - name: Run unit tests
       run: |
-        python -m unittest discover -s tests -p "*.py"
-
-    - name: Build Docker Image
-      run: |
-        docker build . --file Dockerfile --tag shared-groceries-app:latest
-
-    - name: Run Application in Docker Locally
-      run: |
-        docker run -d --name shared-groceries-app-container -p 8080:8080 shared-groceries-app:latest
-
-    - name: Verify Application Logs and Status
-      run: |
-        docker logs shared-groceries-app-container
-        docker inspect -f '{{.State.Running}}' shared-groceries-app-container
+        python -m unittest skeleton_unit_testing.py

@@ -1,7 +1,5 @@
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea, QMessageBox
-)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea, QMessageBox)
 from PySide6.QtCore import Qt
 import sys
 import logging
@@ -325,7 +323,12 @@ class SharedGroceriesCart(QMainWindow):
 
 
 def main():
-    app = QApplication(sys.argv)
+    # Check if QApplication is already created
+    if not QApplication.instance():
+        app = QApplication(sys.argv)
+    else:
+        app = QApplication.instance()
+
     window = SharedGroceriesCart()
     window.show()
     sys.exit(app.exec())

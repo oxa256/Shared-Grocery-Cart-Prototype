@@ -1,5 +1,5 @@
-# Use Ubuntu as the base image
-FROM ubuntu:22.04
+# BASE MAGE
+FROM python:3.13-slim
 
 # Install required system dependencies for GUI and PySide6
 RUN apt-get update && apt-get install -y \
@@ -23,26 +23,27 @@ RUN apt-get update && apt-get install -y \
     libxcb-icccm4 \
     libxcb-image0 \
     libxcb-shm0 \
-    && apt-get clean
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables
-ENV QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib/x86_64-linux-gnu/qt6/plugins/platforms
+# Set environment variables for Qt and X11
+ENV QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms
 ENV QT_XCB_GL_INTEGRATION=xcb_egl
-ENV QT_DEBUG_PLUGINS=1
-ENV QT_QPA_PLATFORM=offscreen
+ENV QT_QPA_PLATFORM=minimal
+ENV DISPLAY=:99
 
-
-# Set working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy application and test files
+COPY requirements.txt /app/requirements.txt
+COPY skeleton.py /app/skeleton.py
+COPY skeleton_unit_testing.py /app/skeleton_unit_testing.py
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy your application code
-COPY skeleton.py /app/skeleton.py
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/app
 
-# Set the default command to run your app
+# Set the default command to run the application
 CMD ["python3", "/app/skeleton.py"]
