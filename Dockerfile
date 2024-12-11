@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-icccm4 \
     libxcb-image0 \
     libxcb-shm0 \
+    libegl1-mesa  \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for Qt and X11
