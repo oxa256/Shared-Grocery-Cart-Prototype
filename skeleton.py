@@ -4,7 +4,34 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 import sys
+import logging
 
+# Configure logging to both console and a file
+logger = logging.getLogger("SharedGroceriesCart")
+logger.setLevel(logging.DEBUG)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# File handler for logging
+file_handler = logging.FileHandler("app_debug.log")
+file_handler.setLevel(logging.DEBUG)
+
+# Log format
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Add handlers to logger
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+logger.info("Application initialized successfully.")
+app = QApplication([])
+
+# Disable size hints propagation
+app.setAttribute(Qt.AA_DisableHighDpiScaling)
 class SharedGroceriesCart(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -207,6 +234,7 @@ class SharedGroceriesCart(QMainWindow):
             total_info = QLabel(f"{student}: ${total:.2f} {delivery_fee_info}")
             self.cart_layout.addWidget(total_info)
 
+
     def add_product(self, product):
         """Add a product to the cart, updating the cart display."""
         if self.selected_student is None:
@@ -214,17 +242,23 @@ class SharedGroceriesCart(QMainWindow):
             return
 
         if product["name"] not in self.cart:
+            # Initialize the product with both quantity and added_by
             self.cart[product["name"]] = {
                 "price": product["price"],
-                "added_by": {self.selected_student: 1}
+                "quantity": 1,  # Initialize quantity
+                "added_by": {self.selected_student: 1}  # Initialize added_by with the student and quantity
             }
         else:
+            # If the product is already in the cart, update quantity and added_by
             if self.selected_student not in self.cart[product["name"]]["added_by"]:
                 self.cart[product["name"]]["added_by"][self.selected_student] = 1
             else:
                 self.cart[product["name"]]["added_by"][self.selected_student] += 1
 
-        self.update_cart_display()
+            self.cart[product["name"]]["quantity"] += 1  # Increment quantity for existing product
+
+        self.update_cart_display()  # Update the display after adding the product
+
 
     def remove_product(self, product_name, student_name):
         """Remove a product from a student's cart."""
