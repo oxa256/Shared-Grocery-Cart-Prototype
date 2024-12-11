@@ -29,7 +29,7 @@ python skeleton.py
 ## How to Run Locally:
 
 1. **Build the Docker Image:**
-   docker build . --file Dockerfile --tag shared-groceries-app:latest
+docker build . --file Dockerfile --tag shared-groceries-app:latest
 
 ## Run the Docker Container:
 docker run -d --name shared-groceries-app-container -p 8080:8080 shared-groceries-app:latest

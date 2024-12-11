@@ -1,5 +1,5 @@
 # BASE MAGE
-FROM python:3.13-slim
+FROM python:3.11
 
 # Install required system dependencies for GUI and PySide6
 RUN apt-get update && apt-get install -y \
@@ -45,6 +45,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Set the PYTHONPATH environment variable
 ENV PYTHONPATH=/app
+ENV PYTHONWARNINGS="ignore::DeprecationWarning"
 
 # Set the default command to run the application
 CMD ["python3", "/app/skeleton.py"]
